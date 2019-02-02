@@ -5,8 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UltimateUserInput"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="UUInput" Height="170" Width="400" MinWidth="400" MinHeight="170">
     <Grid>
-        
+        <TabControl x:Name="ModeTab" IsSynchronizedWithCurrentItem="False">
+            <TabItem Header="Простой" Height="0" Width="0">
+                <Grid>
+                    <Slider x:Name="Slider" Margin="10,44,0,0" VerticalAlignment="Top" AutoToolTipPlacement="BottomRight" Maximum="64" Minimum="1" LargeChange="5" SmallChange="1" TickPlacement="BottomRight" Value="1" TickFrequency="0" ValueChanged="Slider_ValueChanged" Width="160" HorizontalAlignment="Left"/>
+                    <Button x:Name="StartButton" Content="Старт(ALT+Q)" HorizontalAlignment="Right" Margin="0,0,10,13" VerticalAlignment="Bottom" Width="96" Click="StartButton_Click"/>
+                    <Label Content="Скорость(RPS)" HorizontalAlignment="Left" Margin="10,18,0,0" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="ButtonSelector" HorizontalAlignment="Left" Margin="10,0,0,12" VerticalAlignment="Bottom" Width="120" SelectedIndex="0" SelectionChanged="ButtonSelector_SelectionChanged">
+                        <ComboBoxItem Content="Левая"/>
+                        <ComboBoxItem Content="Правая"/>
+                        <ComboBoxItem Content="Средняя"/>
+                    </ComboBox>
+                    <Label Content="Кнопка" HorizontalAlignment="Left" Margin="10,0,0,34" VerticalAlignment="Bottom"/>
+                    <Slider x:Name="Slider_Copy" Margin="0,44,10,0" VerticalAlignment="Top" AutoToolTipPlacement="BottomRight" Maximum="50" Minimum="1" LargeChange="5" SmallChange="1" TickPlacement="BottomRight" Value="1" TickFrequency="0" Width="160" ValueChanged="Slider_Copy_ValueChanged" HorizontalAlignment="Right"/>
+                    <Label Content="Множитель(CPR)" HorizontalAlignment="Left" Margin="216,18,0,0" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Тайминговый" Height="0" Width="0">
+                <Grid/>
+            </TabItem>
+            <TabItem Header="Программируемый" Height="0" Width="0">
+                <Grid/>
+            </TabItem>
+        </TabControl>
+        <Menu VerticalAlignment="Top">
+            <MenuItem Header="Режим">
+                <MenuItem Header="Простой" Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <Image Source="icons\mouse.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Продвинутый" Click="MenuItem_Click_1">
+                    <MenuItem.Icon>
+                        <Image Source="icons\keyboard.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Программируемый" Click="MenuItem_Click_2">
+                    <MenuItem Header="Открыть">
+                            <MenuItem.Icon>
+                                <Image Source="icons\open.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Новый">
+                            <MenuItem.Icon>
+                                <Image Source="icons\new.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Сохранить">
+                            <MenuItem.Icon>
+                                <Image Source="icons\save.png"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    <MenuItem.Icon>
+                        <Image Source="icons\script.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Настройки"/>
+        </Menu>
     </Grid>
 </Window>

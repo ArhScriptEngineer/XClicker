@@ -535,11 +535,6 @@ namespace UltimateUserInput
             File.WriteAllText(file, InputInstructions);
         }
 
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Settings.Save();
-        }
-
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             Thread.Sleep(Waiting);
@@ -547,5 +542,10 @@ namespace UltimateUserInput
             UserInput.ButtonEvent((WinApi.Vk)SelectedKey, UserInput.ButtonEvents.Up);
         }
         #endregion
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Settings.Save();
+        }
     }
 }

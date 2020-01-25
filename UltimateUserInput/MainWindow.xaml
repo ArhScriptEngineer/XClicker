@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UltimateUserInput"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="UltimateUserInput.MainWindow"
         mc:Ignorable="d"
-        Title="XClicker" Height="170" Width="400" Closed="Window_Closed">
+        Title="XMusic" Height="170" Width="400" Closed="Window_Closed">
     <Grid>
         <TabControl x:Name="ModeTab" IsSynchronizedWithCurrentItem="False" SelectedIndex="0" Grid.ColumnSpan="2" SelectionChanged="ModeTab_SelectionChanged">
             <TabItem Header="Простой" Height="0" Width="0">

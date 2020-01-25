@@ -40,9 +40,9 @@ namespace UltimateUserInput
                 }
                 else if (param[0] == "N")
                 {
-                    Thread.Sleep(IntVars["N"]*10);
+                    Thread.Sleep(IntVars["N"]*2);
                 }
-                IntVars["N"] = rnd.Next(100, 500);
+                IntVars["N"] = rnd.Next(50, 150);
                 switch (param[1])
                 {
                     case "Mouse":

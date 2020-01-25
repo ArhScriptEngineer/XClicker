@@ -61,13 +61,15 @@ namespace UltimateUserInput
         }
 
         // ******************************************************************
-        public void Unregister()
+        public bool Unregister()
         {
             WinHotKey hotKey;
             if (_dictHotKeyToCalBackProc.TryGetValue(Id, out hotKey))
             {
-                UnregisterHotKey(IntPtr.Zero, Id);
+                _dictHotKeyToCalBackProc.Remove(Id);
+                return UnregisterHotKey(IntPtr.Zero, Id);
             }
+            return false;
         }
 
         // ******************************************************************

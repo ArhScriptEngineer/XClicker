@@ -265,6 +265,7 @@ namespace UltimateUserInput
         static int selectedbutton = 0,multipler = 0;
         float MidiSpeed = 6;
         Dictionary<byte, bool> KeyStates = new Dictionary<byte, bool>();
+        Stopwatch st = new Stopwatch();
         private void AcSwitch(WinHotKey Key)
         {
             switch (ModeTab.SelectedIndex)
@@ -288,13 +289,23 @@ namespace UltimateUserInput
                         WriteItButton.Content = "Остановить(" + MainHotKey.Text + ")";
                     if (processes.Count > 0)
                     {
-                        foreach (var x in processes)
+                        try
                         {
-                            x.Abort();
+                            foreach (var x in processes)
+                            {
+                                x.Abort();
+                            }
+                            processes.Clear();
                         }
-                        processes.Clear();
+                        catch
+                        {
+
+                        }
                         if (Record.IsChecked.Value)
                         {
+                            WinApi.MouseHook.stop();
+                            KeyStates.Clear();
+                            st.Stop();
                             foreach (var keyst in KeyStates)
                             {
                                 if (keyst.Value)
@@ -317,8 +328,6 @@ namespace UltimateUserInput
                                     }
                                 }
                             }
-                            WinApi.MouseHook.stop();
-                            KeyStates.Clear();
                             //Console.WriteLine(InputInstructions.ToString());
                         }
                         UserInput.ButtonEvent(WinApi.Vk.VK_RSHIFT, UserInput.ButtonEvents.Up);
@@ -376,23 +385,22 @@ namespace UltimateUserInput
                             processes.Add(Thread.CurrentThread);
                             Thread.Sleep(250);
                             KeyStates.Clear();
-                            WinApi.MousePoint MousePos = new WinApi.MousePoint(0,0);
+                            
                             int cnt = 0;
                             InputInstructions.Clear();
-                            Stopwatch st = new Stopwatch();
                             st.Start();
                             while (true)
                             {
                                 Thread.Sleep(1);
                                 cnt++;
-                                WinApi.MousePoint MousePosN = WinApi.GetCursorPosition();
+                                /*WinApi.MousePoint MousePosN = WinApi.GetCursorPosition();
                                 if (MousePos != MousePosN)
                                 {
-                                    InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}\n");
+                                    //InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}\n");
                                     //Console.WriteLine($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}");
-                                    MousePos = MousePosN;
-                                    st.Restart();
-                                }
+                                    //MousePos = MousePosN;
+                                    //st.Restart();
+                                }*/
                                 if(MouseDelta != 0)
                                 {
                                     InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Scroll {MouseDelta}\n");
@@ -648,10 +656,19 @@ namespace UltimateUserInput
         #endregion
 
         int MouseDelta = 0;
+        WinApi.MousePoint MousePos = new WinApi.MousePoint(0, 0);
         private void MouseHook_MouseAction(object sender, WinApi.MouseHook.MouseEventArgs e)
         {
             MouseDelta += e.Wheel;
-            Console.WriteLine(e.Wheel);
+            WinApi.MousePoint x = new WinApi.MousePoint(e.X, e.Y);
+            //Console.WriteLine(e.X+"|"+ e.Y);
+            if (MousePos != x)
+            {
+                InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Set {e.X} {e.Y}\n");
+                MousePos = x; 
+                st.Restart();
+            }
+            //Console.WriteLine(e.Wheel);
         }
 
         private void Window_Closed(object sender, EventArgs e)

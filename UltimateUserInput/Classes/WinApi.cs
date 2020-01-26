@@ -126,7 +126,8 @@ namespace UltimateUserInput
             private static IntPtr HookCallback(
               int nCode, IntPtr wParam, IntPtr lParam)
             {
-                if (nCode >= 0 && MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam)
+                MouseMessages MSGTP = (MouseMessages)wParam;
+                if (nCode >= 0 && (MSGTP == MouseMessages.WM_MOUSEWHEEL || MSGTP == MouseMessages.WM_MOUSEMOVE))
                 {
                     MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
                     MouseAction(null, new MouseEventArgs(NativeMethods.GET_WHEEL_DELTA_WPARAM(hookStruct.mouseData), hookStruct.pt.x, hookStruct.pt.y));

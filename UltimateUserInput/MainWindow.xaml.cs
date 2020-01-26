@@ -35,6 +35,8 @@ namespace UltimateUserInput
     {
         public MainWindow()
         {
+            if (File.Exists("update.vbs"))
+                File.Delete("update.vbs");
             Settings.Load();
             InitializeComponent();
             MinWidth = 400;
@@ -61,6 +63,7 @@ namespace UltimateUserInput
                     }
                 }
             }).Start();
+            Version.Content = "v"+Extentions.Version;
         }
 
         #region Updater
@@ -289,6 +292,7 @@ namespace UltimateUserInput
                         }
                         processes.Clear();
                         UserInput.ButtonEvent(WinApi.Vk.VK_RSHIFT, UserInput.ButtonEvents.Up);
+                        Console.WriteLine(InputInstructions.ToString());
                         WriteItButton.Content = "Начать(" + MainHotKey.Text + ")";
                     }
                     else if (TextTyping.IsChecked.Value)
@@ -326,7 +330,7 @@ namespace UltimateUserInput
                         Task.Run(() =>
                         {
                             processes.Add(Thread.CurrentThread);
-                            ScriptLanguage.RunScript(InputInstructions);
+                            ScriptLanguage.RunScript(InputInstructions.ToString());
                             processes.Clear();
                             WriteItButton.Dispatcher.Invoke(() =>
                             WriteItButton.Content = "Начать(" + MainHotKey.Text + ")");
@@ -334,7 +338,61 @@ namespace UltimateUserInput
                     }
                     else if (Record.IsChecked.Value)
                     {
-
+                        Task.Run(() =>
+                        {
+                            processes.Add(Thread.CurrentThread);
+                            Dictionary<byte, bool> KeyStates = new Dictionary<byte, bool>();
+                            WinApi.MousePoint MousePos = new WinApi.MousePoint(0,0);
+                            int cnt = 0;
+                            InputInstructions.Clear();
+                            Stopwatch st = new Stopwatch();
+                            st.Start();
+                            while (true)
+                            {
+                                Thread.Sleep(1);
+                                cnt++;
+                                for (byte i = 0; i < 255; i++)
+                                {
+                                    int state = WinApi.GetAsyncKeyState(i);
+                                    bool presed = state != 0;
+                                    //if (!presed && cnt == 0) continue;
+                                    WinApi.MousePoint MousePosN = WinApi.GetCursorPosition();
+                                    if (MousePos != MousePosN)
+                                    {
+                                        InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}\n");
+                                        MousePos = MousePosN;
+                                        st.Restart();
+                                    }
+                                    if (!KeyStates.ContainsKey(i))
+                                        KeyStates.Add(i, presed);
+                                    if (KeyStates[i] != presed)
+                                    {
+                                        WinApi.Vk Button = (WinApi.Vk)i;
+                                        string Word = presed?"Down":"Up";
+                                        switch (Button)
+                                        {
+                                            case WinApi.Vk.VK_LBUTTON:
+                                                InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse {Word} Left\n");
+                                                break;
+                                            case WinApi.Vk.VK_RBUTTON:
+                                                InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse {Word} Right\n");
+                                                break;
+                                            case WinApi.Vk.VK_MBUTTON:
+                                                InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse {Word} Middle\n");
+                                                break;
+                                            default:
+                                                InputInstructions.Append($"{st.ElapsedMilliseconds} Button {Word} {Button.ToString().Replace("VK_","")}\n");
+                                                break;
+                                        }
+                                        KeyStates[i] = presed;
+                                        st.Restart();// = 0;
+                                    }
+                                }
+                            }
+                            //processes.Clear();
+                            //WriteItButton.Dispatcher.Invoke(() =>
+                            //WriteItButton.Content = "Начать(" + MainHotKey.Text + ")");
+                        });
                     }
                     break;
             }
@@ -510,7 +568,7 @@ namespace UltimateUserInput
         {
             AcSwitch(null);
         }
-        string InputInstructions;
+        StringBuilder InputInstructions = new StringBuilder();
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             OpenFileDialog Dial = new OpenFileDialog();
@@ -520,7 +578,8 @@ namespace UltimateUserInput
             var btt = (Button)sender;
             //btt.Content = "Выбрать файл ("+Path.GetFileName(file)+")";
             //MidiPatch = file;
-            InputInstructions = File.ReadAllText(file);
+            InputInstructions.Clear();
+            InputInstructions.Append(File.ReadAllText(file));
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -532,7 +591,7 @@ namespace UltimateUserInput
             var btt = (Button)sender;
             //btt.Content = "Выбрать файл ("+Path.GetFileName(file)+")";
             //MidiPatch = file;
-            File.WriteAllText(file, InputInstructions);
+            File.WriteAllText(file, InputInstructions.ToString());
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)

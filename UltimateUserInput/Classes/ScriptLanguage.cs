@@ -38,11 +38,21 @@ namespace UltimateUserInput
                 {
                     Thread.Sleep(E);
                 }
-                else if (param[0] == "N")
+                else if (IntVars.ContainsKey(param[0]))
                 {
-                    Thread.Sleep(IntVars["N"]*2);
+                    Thread.Sleep(IntVars[param[0]]);
+                }else if (param[0].Contains("R"))
+                {
+                    string[] xolod = param[0].Split('R');
+                    if (xolod.Length >=2)
+                    {
+                        int.TryParse(xolod[0], out int min);
+                        int.TryParse(xolod[1], out int smax);
+                        Thread.Sleep(rnd.Next(min,smax));
+                    }
+
                 }
-                IntVars["N"] = rnd.Next(50, 150);
+                IntVars["N"] = rnd.Next(80, 140);
                 switch (param[1])
                 {
                     case "Mouse":
@@ -70,12 +80,20 @@ namespace UltimateUserInput
                             case "Move":
                                 if (!int.TryParse(param[3], out int X)) X = IntVars[param[3]];
                                 if (!int.TryParse(param[4], out int Y)) Y = IntVars[param[4]];
-                                UserInput.MouseMove(X, Y);
+                                if (param.Length < 6 || !int.TryParse(param[5], out int Zone)) Zone = 0;
+                                int rnd2z = 0;
+                                if (Zone != 0)
+                                    rnd2z = Zone / 2;
+                                UserInput.MouseMove(X + rnd.Next(-rnd2z, rnd2z), Y + rnd.Next(-rnd2z, rnd2z));
                                 break;
                             case "Set":
                                 if(!int.TryParse(param[3], out int Xa)) Xa = IntVars[param[3]];
                                 if(!int.TryParse(param[4], out int Ya)) Ya = IntVars[param[4]];
-                                UserInput.SetMouse(Xa, Ya);
+                                if (param.Length < 6 || !int.TryParse(param[5], out int Zonex)) Zonex = 0;
+                                int rndz = 0;
+                                if (Zonex != 0)
+                                    rndz = Zonex / 2;
+                                UserInput.SetMouse(Xa+rnd.Next(-rndz, rndz), Ya + rnd.Next(-rndz, rndz));
                                 break;
                             case "Get":
                                 var Mouse = WinApi.GetCursorPosition();

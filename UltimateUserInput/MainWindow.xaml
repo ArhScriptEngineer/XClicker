@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UltimateUserInput"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="UltimateUserInput.MainWindow"
-        mc:Ignorable="d"
-        Title="XMusic" Height="170" Width="400" Closed="Window_Closed">
+        mc:Ignorable="d" Height="397" Width="800" Closed="Window_Closed" Title="XWindow">
     <Grid>
         <TabControl x:Name="ModeTab" IsSynchronizedWithCurrentItem="False" SelectedIndex="0" Grid.ColumnSpan="2" SelectionChanged="ModeTab_SelectionChanged">
             <TabItem Header="Простой" Height="0" Width="0">
@@ -55,10 +54,10 @@
                     <TextBox x:Name="TextToWriteAsUser" Margin="10,45,0,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="260" Height="102" Grid.Column="1" IsEnabled="False"/>
                     <Button x:Name="WriteItButton" Content="Начать(ALT+F1)" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="186" Click="WriteItButton_Click" Grid.Column="1" Height="20"/>
                     <RadioButton x:Name="TextTyping" Content="Набор текста" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" Grid.Column="1" Height="15" Width="121" IsEnabled="False"/>
-                    <RadioButton x:Name="Play" Content="Воспроизвидение" HorizontalAlignment="Left" Margin="13,155,0,0" VerticalAlignment="Top" Grid.Column="1" Height="15"/>
+                    <RadioButton x:Name="Play" Content="Воспроизвидение" HorizontalAlignment="Left" Margin="13,155,0,0" VerticalAlignment="Top" Grid.Column="1" Height="15" IsChecked="True"/>
                     <Button Content="Загрузить" HorizontalAlignment="Left" Margin="146,152,0,0" VerticalAlignment="Top" Width="124" Click="Button_Click_3" Grid.Column="1" Height="20"/>
-                    <RadioButton x:Name="Record" Content="Запись" HorizontalAlignment="Left" Margin="13,180,0,0" VerticalAlignment="Top" Grid.Column="1" Height="15" IsEnabled="False"/>
-                    <Button Content="Сохранить" HorizontalAlignment="Left" Margin="146,177,0,0" VerticalAlignment="Top" Width="124" Click="Button_Click_4" Grid.Column="1" Height="20" IsEnabled="False"/>
+                    <RadioButton x:Name="Record" Content="Запись" HorizontalAlignment="Left" Margin="13,180,0,0" VerticalAlignment="Top" Grid.Column="1" Height="15"/>
+                    <Button Content="Сохранить" HorizontalAlignment="Left" Margin="146,177,0,0" VerticalAlignment="Top" Width="124" Click="Button_Click_4" Grid.Column="1" Height="20"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Программируемый" Height="0" Width="0">
@@ -144,5 +143,6 @@
             </MenuItem>
             <MenuItem Header="Настройки" Click="MenuItem_Click_7"/>
         </Menu>
+        <Label x:Name="Version" Content="v0" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="0" Margin="0,1,10,0" HorizontalContentAlignment="Right"/>
     </Grid>
 </Window>

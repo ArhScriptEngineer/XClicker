@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 namespace UltimateUserInput
 {
@@ -103,6 +104,12 @@ namespace UltimateUserInput
             if (!gotPoint) { currentMousePoint = new MousePoint(0, 0); }
             return currentMousePoint;
         }
+
+        [DllImport("user32.dll")]
+        public static extern int GetAsyncKeyState(Int32 i);
+
+        [DllImport("user32.dll")]
+        public static extern int PeekMessage(out NativeMessage lpMsg, IntPtr window, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
 
         [DllImport("user32.dll", EntryPoint = "SetCursorPos")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -404,6 +411,29 @@ namespace UltimateUserInput
             {
                 X = x;
                 Y = y;
+            }
+
+            public static bool operator ==(MousePoint a, MousePoint b)
+            {
+                return a.X == b.X && a.Y == b.Y;
+            }
+            public static bool operator !=(MousePoint a, MousePoint b)
+            {
+                return a.X != b.X || a.Y != b.Y;
+            }
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct NativeMessage
+        {
+            public IntPtr handle;
+            public uint msg;
+            public IntPtr wParam;
+            public IntPtr lParam;
+            public uint time;
+            public Point p;
+            public override string ToString()
+            {
+                return handle + ", " + msg + ", " + wParam + ", " + lParam + ", " + time + ", " + p;
             }
         }
     }

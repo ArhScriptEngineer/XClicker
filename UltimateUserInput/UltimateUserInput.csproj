@@ -7,7 +7,7 @@
     <ProjectGuid>{246FA676-419E-41C7-9740-5057350FEBB9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>UltimateUserInput</RootNamespace>
-    <AssemblyName>XMusic</AssemblyName>
+    <AssemblyName>XClicker</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -89,7 +89,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\Extentions.cs" />
-    <Compile Include="Classes\MyKeyPrompt.cs" />
     <Compile Include="Classes\ScriptLanguage.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\UserInput.cs" />

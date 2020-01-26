@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Diagnostics;
 
 namespace UltimateUserInput
 {
@@ -91,7 +92,127 @@ namespace UltimateUserInput
                 SendMessage(0xffff, 0x0112, 0xF170, 2);
             }
         }
+        public static class MouseHook
 
+        {
+            public static event EventHandler<MouseEventArgs> MouseAction = delegate { };
+
+            public static void Start()
+            {
+                _hookID = SetHook(_proc);
+
+
+            }
+            public static void stop()
+            {
+                UnhookWindowsHookEx(_hookID);
+            }
+
+            private static LowLevelMouseProc _proc = HookCallback;
+            private static IntPtr _hookID = IntPtr.Zero;
+
+            private static IntPtr SetHook(LowLevelMouseProc proc)
+            {
+                using (Process curProcess = Process.GetCurrentProcess())
+                using (ProcessModule curModule = curProcess.MainModule)
+                {
+                    return SetWindowsHookEx(WH_MOUSE_LL, proc,
+                      GetModuleHandle(curModule.ModuleName), 0);
+                }
+            }
+
+            private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+            private static IntPtr HookCallback(
+              int nCode, IntPtr wParam, IntPtr lParam)
+            {
+                if (nCode >= 0 && MouseMessages.WM_MOUSEWHEEL == (MouseMessages)wParam)
+                {
+                    MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                    MouseAction(null, new MouseEventArgs(NativeMethods.GET_WHEEL_DELTA_WPARAM(hookStruct.mouseData), hookStruct.pt.x, hookStruct.pt.y));
+                }
+                return CallNextHookEx(_hookID, nCode, wParam, lParam);
+            }
+
+            private const int WH_MOUSE_LL = 14;
+
+            private enum MouseMessages
+            {
+                WM_LBUTTONDOWN = 0x0201,
+                WM_LBUTTONUP = 0x0202,
+                WM_MOUSEMOVE = 0x0200,
+                WM_MOUSEWHEEL = 0x020A,
+                WM_RBUTTONDOWN = 0x0204,
+                WM_RBUTTONUP = 0x0205
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct POINT
+            {
+                public int x;
+                public int y;
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct MSLLHOOKSTRUCT
+            {
+                public POINT pt;
+                public uint mouseData;
+                public uint flags;
+                public uint time;
+                public IntPtr dwExtraInfo;
+            }
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            private static extern IntPtr SetWindowsHookEx(int idHook,
+              LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+            [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode,
+              IntPtr wParam, IntPtr lParam);
+
+            [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+            internal static class NativeMethods
+            {
+                internal static ushort HIWORD(IntPtr dwValue)
+                {
+                    return (ushort)((((long)dwValue) >> 0x10) & 0xffff);
+                }
+
+                internal static ushort HIWORD(uint dwValue)
+                {
+                    return (ushort)(dwValue >> 0x10);
+                }
+
+                internal static int GET_WHEEL_DELTA_WPARAM(IntPtr wParam)
+                {
+                    return (short)HIWORD(wParam);
+                }
+
+                internal static int GET_WHEEL_DELTA_WPARAM(uint wParam)
+                {
+                    return (short)HIWORD(wParam);
+                }
+            }
+
+            public class MouseEventArgs : EventArgs
+            {
+                public int Wheel, X, Y;
+                public MouseEventArgs(int wheel, int x, int y)
+                {
+                    Wheel = wheel;
+                    X = x;
+                    Y = y;
+                }
+            }
+
+        }
 
         public enum GetWindow_Cmd : uint
         {

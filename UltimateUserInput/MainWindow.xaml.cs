@@ -64,6 +64,7 @@ namespace UltimateUserInput
                 }
             }).Start();
             Version.Content = "v"+Extentions.Version;
+            WinApi.MouseHook.MouseAction += MouseHook_MouseAction;
         }
 
         #region Updater
@@ -264,7 +265,6 @@ namespace UltimateUserInput
         static int selectedbutton = 0,multipler = 0;
         float MidiSpeed = 6;
         Dictionary<byte, bool> KeyStates = new Dictionary<byte, bool>();
-        Stopwatch st = new Stopwatch();
         private void AcSwitch(WinHotKey Key)
         {
             switch (ModeTab.SelectedIndex)
@@ -295,7 +295,6 @@ namespace UltimateUserInput
                         processes.Clear();
                         if (Record.IsChecked.Value)
                         {
-                            st.Stop();
                             foreach (var keyst in KeyStates)
                             {
                                 if (keyst.Value)
@@ -318,6 +317,9 @@ namespace UltimateUserInput
                                     }
                                 }
                             }
+                            WinApi.MouseHook.stop();
+                            KeyStates.Clear();
+                            //Console.WriteLine(InputInstructions.ToString());
                         }
                         UserInput.ButtonEvent(WinApi.Vk.VK_RSHIFT, UserInput.ButtonEvents.Up);
                         //Console.WriteLine(InputInstructions.ToString());
@@ -368,13 +370,16 @@ namespace UltimateUserInput
                     }
                     else if (Record.IsChecked.Value)
                     {
+                        WinApi.MouseHook.Start();
                         Task.Run(() =>
                         {
                             processes.Add(Thread.CurrentThread);
-                            //Thread.Sleep(1000);
+                            Thread.Sleep(250);
+                            KeyStates.Clear();
                             WinApi.MousePoint MousePos = new WinApi.MousePoint(0,0);
                             int cnt = 0;
                             InputInstructions.Clear();
+                            Stopwatch st = new Stopwatch();
                             st.Start();
                             while (true)
                             {
@@ -384,7 +389,14 @@ namespace UltimateUserInput
                                 if (MousePos != MousePosN)
                                 {
                                     InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}\n");
+                                    //Console.WriteLine($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}");
                                     MousePos = MousePosN;
+                                    st.Restart();
+                                }
+                                if(MouseDelta != 0)
+                                {
+                                    InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Scroll {MouseDelta}\n");
+                                    MouseDelta = 0;
                                     st.Restart();
                                 }
                                 for (byte i = 0; i < 255; i++)
@@ -394,7 +406,7 @@ namespace UltimateUserInput
                                     //if (!presed && cnt == 0) continue;
                                     if (!KeyStates.ContainsKey(i))
                                     {
-                                        KeyStates.Add(i, presed);
+                                        KeyStates.Add(i, false);
                                         continue;
                                     }
                                     if (KeyStates[i] != presed)
@@ -416,6 +428,7 @@ namespace UltimateUserInput
                                                 InputInstructions.Append($"{st.ElapsedMilliseconds} Button {Word} {Button.ToString().Replace("VK_","")}\n");
                                                 break;
                                         }
+                                        //Console.WriteLine($"{st.ElapsedMilliseconds} Button {Word} {Button.ToString().Replace("VK_", "")}");
                                         KeyStates[i] = presed;
                                         st.Restart();// = 0;
                                     }
@@ -633,6 +646,13 @@ namespace UltimateUserInput
             UserInput.ButtonEvent((WinApi.Vk)SelectedKey, UserInput.ButtonEvents.Up);
         }
         #endregion
+
+        int MouseDelta = 0;
+        private void MouseHook_MouseAction(object sender, WinApi.MouseHook.MouseEventArgs e)
+        {
+            MouseDelta += e.Wheel;
+            Console.WriteLine(e.Wheel);
+        }
 
         private void Window_Closed(object sender, EventArgs e)
         {

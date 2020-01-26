@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UltimateUserInput"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="UltimateUserInput.MainWindow"
-        mc:Ignorable="d" Height="397" Width="800" Closed="Window_Closed" Title="XWindow">
+        mc:Ignorable="d" Height="397" Width="800" Closed="Window_Closed" Title="XMusic">
     <Grid>
         <TabControl x:Name="ModeTab" IsSynchronizedWithCurrentItem="False" SelectedIndex="0" Grid.ColumnSpan="2" SelectionChanged="ModeTab_SelectionChanged">
             <TabItem Header="Простой" Height="0" Width="0">

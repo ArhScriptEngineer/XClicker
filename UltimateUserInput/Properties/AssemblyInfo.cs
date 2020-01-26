@@ -8,12 +8,12 @@ using System.Windows;
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
 [assembly: AssemblyTitle("XMusic")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Твоя Музыка")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("-")]
 [assembly: AssemblyProduct("XMusic")]
 [assembly: AssemblyCopyright("Copyright © ScriptedEngineer 2020")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("-")]
 [assembly: AssemblyCulture("")]
 
 // Установка значения False для параметра ComVisible делает типы в этой сборке невидимыми
@@ -51,5 +51,5 @@ using System.Windows;
 // Можно задать все значения или принять номер сборки и номер редакции по умолчанию.
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.0.4")]
-[assembly: AssemblyFileVersion("0.0.0.4")]
+[assembly: AssemblyVersion("0.0.0.5")]
+[assembly: AssemblyFileVersion("0.0.0.5")]

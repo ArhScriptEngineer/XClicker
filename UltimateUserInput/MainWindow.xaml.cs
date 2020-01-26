@@ -263,6 +263,8 @@ namespace UltimateUserInput
         List<Thread> processes = new List<Thread>();
         static int selectedbutton = 0,multipler = 0;
         float MidiSpeed = 6;
+        Dictionary<byte, bool> KeyStates = new Dictionary<byte, bool>();
+        Stopwatch st = new Stopwatch();
         private void AcSwitch(WinHotKey Key)
         {
             switch (ModeTab.SelectedIndex)
@@ -291,33 +293,61 @@ namespace UltimateUserInput
                             x.Abort();
                         }
                         processes.Clear();
+                        if (Record.IsChecked.Value)
+                        {
+                            st.Stop();
+                            foreach (var keyst in KeyStates)
+                            {
+                                if (keyst.Value)
+                                {
+                                    WinApi.Vk Button = (WinApi.Vk)keyst.Key;
+                                    switch (Button)
+                                    {
+                                        case WinApi.Vk.VK_LBUTTON:
+                                            InputInstructions.Append($"0 Mouse Up Left\n");
+                                            break;
+                                        case WinApi.Vk.VK_RBUTTON:
+                                            InputInstructions.Append($"0 Mouse Up  Right\n");
+                                            break;
+                                        case WinApi.Vk.VK_MBUTTON:
+                                            InputInstructions.Append($"0 Mouse Up  Middle\n");
+                                            break;
+                                        default:
+                                            InputInstructions.Append($"0 Button Up {Button.ToString().Replace("VK_", "")}\n");
+                                            break;
+                                    }
+                                }
+                            }
+                        }
                         UserInput.ButtonEvent(WinApi.Vk.VK_RSHIFT, UserInput.ButtonEvents.Up);
-                        Console.WriteLine(InputInstructions.ToString());
+                        //Console.WriteLine(InputInstructions.ToString());
                         WriteItButton.Content = "Начать(" + MainHotKey.Text + ")";
                     }
                     else if (TextTyping.IsChecked.Value)
                     {
+                        //Console.WriteLine(WinApi.GetKeyboardLayout());
                         string Text = TextToWriteAsUser.Text;
                         Task.Run(() =>
                         {
                             processes.Add(Thread.CurrentThread);
                             int index = 0;
+                            string textr = Text.ToLower();
                             foreach (char chawr in Text.ToUpper())
                             {
-                                bool Shift = chawr == Text[index];
-                                if (WinApi.CharToVk.ContainsKey(chawr))
+                                bool Shift = textr[index] != Text[index];
+                                if (UserInput.CharToScript.ContainsKey(chawr))
                                 {
                                     Thread.Sleep(5);
-                                    WinApi.Vk X = WinApi.CharToVk[chawr];
-                                    if (Shift) UserInput.ButtonEvent(WinApi.Vk.VK_RSHIFT, UserInput.ButtonEvents.Down);
-                                    UserInput.ButtonEvent(X, UserInput.ButtonEvents.Down);
-                                    UserInput.ButtonEvent(X, UserInput.ButtonEvents.Up);
-                                    if (Shift) UserInput.ButtonEvent(WinApi.Vk.VK_RSHIFT, UserInput.ButtonEvents.Up);
-                                    if (X == WinApi.Vk.VK_RETURN)
-                                        Thread.Sleep(200);
+                                    string Code = UserInput.CharToScript[chawr];
+                                    if (Code.Contains("<SHIFT?>")) {
+                                        if (Shift)
+                                            Code = $"{Code.Replace("<SHIFT?>", "0 Button Down SHIFT\n")}\n5 Button Up SHIFT";
+                                        else
+                                            Code = Code.Replace("<SHIFT?>", "");
+                                    }
+                                    ScriptLanguage.RunScript(Code);
                                 }
-                                else
-                                    Console.WriteLine(chawr);
+                                //else Console.WriteLine(chawr);
                                 index++;
                             }
                             processes.Clear();
@@ -341,30 +371,32 @@ namespace UltimateUserInput
                         Task.Run(() =>
                         {
                             processes.Add(Thread.CurrentThread);
-                            Dictionary<byte, bool> KeyStates = new Dictionary<byte, bool>();
+                            //Thread.Sleep(1000);
                             WinApi.MousePoint MousePos = new WinApi.MousePoint(0,0);
                             int cnt = 0;
                             InputInstructions.Clear();
-                            Stopwatch st = new Stopwatch();
                             st.Start();
                             while (true)
                             {
                                 Thread.Sleep(1);
                                 cnt++;
+                                WinApi.MousePoint MousePosN = WinApi.GetCursorPosition();
+                                if (MousePos != MousePosN)
+                                {
+                                    InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}\n");
+                                    MousePos = MousePosN;
+                                    st.Restart();
+                                }
                                 for (byte i = 0; i < 255; i++)
                                 {
-                                    int state = WinApi.GetAsyncKeyState(i);
-                                    bool presed = state != 0;
+                                    bool presed = WinApi.GetKeyState(i);
+                                    //bool presed = state != 0;
                                     //if (!presed && cnt == 0) continue;
-                                    WinApi.MousePoint MousePosN = WinApi.GetCursorPosition();
-                                    if (MousePos != MousePosN)
-                                    {
-                                        InputInstructions.Append($"{st.ElapsedMilliseconds} Mouse Set {MousePosN.X} {MousePosN.Y}\n");
-                                        MousePos = MousePosN;
-                                        st.Restart();
-                                    }
                                     if (!KeyStates.ContainsKey(i))
+                                    {
                                         KeyStates.Add(i, presed);
+                                        continue;
+                                    }
                                     if (KeyStates[i] != presed)
                                     {
                                         WinApi.Vk Button = (WinApi.Vk)i;

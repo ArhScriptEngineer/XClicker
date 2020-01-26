@@ -10,81 +10,6 @@ namespace UltimateUserInput
 {
     class WinApi
     {
-        public static Dictionary<char, Vk> CharToVk = new Dictionary<char, Vk>() {
-            {'1',Vk.VK_1 },
-            {'2',Vk.VK_2 },
-            {'3',Vk.VK_3 },
-            {'4',Vk.VK_4 },
-            {'5',Vk.VK_5 },
-            {'6',Vk.VK_6 },
-            {'7',Vk.VK_7 },
-            {'8',Vk.VK_8 },
-            {'9',Vk.VK_9 },
-            {'0',Vk.VK_0 },
-            {'A',Vk.VK_A },
-            {'B',Vk.VK_B },
-            {'C',Vk.VK_C },
-            {'D',Vk.VK_D },
-            {'E',Vk.VK_E },
-            {'F',Vk.VK_F },
-            {'G',Vk.VK_G },
-            {'H',Vk.VK_H },
-            {'I',Vk.VK_I },
-            {'J',Vk.VK_J },
-            {'K',Vk.VK_K },
-            {'L',Vk.VK_L },
-            {'M',Vk.VK_M },
-            {'N',Vk.VK_N },
-            {'O',Vk.VK_O },
-            {'Q',Vk.VK_Q },
-            {'R',Vk.VK_R },
-            {'S',Vk.VK_S },
-            {'T',Vk.VK_T },
-            {'U',Vk.VK_U },
-            {'V',Vk.VK_V },
-            {'W',Vk.VK_W },
-            {'X',Vk.VK_X },
-            {'Y',Vk.VK_Y},
-            {'Z',Vk.VK_Z },
-            {'А',Vk.VK_F },
-            {'Б',Vk.VK_OEM_COMMA },
-            {'В',Vk.VK_D },
-            {'Г',Vk.VK_U },
-            {'Д',Vk.VK_L },
-            {'Е',Vk.VK_T },
-            {'Ё',Vk.VK_OEM_3 },
-            {'Ж',Vk.VK_OEM_1 },
-            {'З',Vk.VK_P },
-            {'И',Vk.VK_B },
-            {'Й',Vk.VK_Q },
-            {'К',Vk.VK_R },
-            {'Л',Vk.VK_K },
-            {'М',Vk.VK_V },
-            {'Н',Vk.VK_Y },
-            {'О',Vk.VK_J },
-            {'П',Vk.VK_G },
-            {'Р',Vk.VK_H },
-            {'С',Vk.VK_C },
-            {'Т',Vk.VK_N },
-            {'У',Vk.VK_E },
-            {'Ф',Vk.VK_A },
-            {'Х',Vk.VK_OEM_4 },
-            {'Ц',Vk.VK_W },
-            {'Ч',Vk.VK_X },
-            {'Ш',Vk.VK_I },
-            {'Щ',Vk.VK_O },
-            {'Ъ',Vk.VK_OEM_6 },
-            {'Ы',Vk.VK_S },
-            {'Ь',Vk.VK_M },
-            {'Э',Vk.VK_OEM_7 },
-            {'Ю',Vk.VK_OEM_PERIOD },
-            {'Я',Vk.VK_Z },
-            {' ',Vk.VK_SPACE },
-            {',',Vk.VK_DECIMAL },
-            //{'\n',Vk.VK_RETURN },
-            {'\r',Vk.VK_RETURN },
-        };
-
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
@@ -106,7 +31,22 @@ namespace UltimateUserInput
         }
 
         [DllImport("user32.dll")]
-        public static extern int GetAsyncKeyState(Int32 i);
+        private static extern int GetAsyncKeyState(Int32 i);
+        public static bool GetKeyState(int i)
+        {
+            return GetAsyncKeyState(i) != 0;
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowThreadProcessId([In] IntPtr hWnd,[Out, Optional] IntPtr lpdwProcessId);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern ushort GetKeyboardLayout([In] int idThread);
+        public static ushort GetKeyboardLayout()
+        {
+            return GetKeyboardLayout(GetWindowThreadProcessId(GetForegroundWindow(), IntPtr.Zero));
+        }
 
         [DllImport("user32.dll")]
         public static extern int PeekMessage(out NativeMessage lpMsg, IntPtr window, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);

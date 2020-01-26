@@ -55,6 +55,27 @@ namespace UltimateUserInput
                 IntVars["N"] = rnd.Next(80, 140);
                 switch (param[1])
                 {
+                    case "Keyboard":
+                        switch (param[2])
+                        {
+                            case "SwitchLayout":
+                                ChangeLayout();
+                                break;
+                            case "SetLayout":
+                                switch (param[3])
+                                {
+                                    case "RU":
+                                        if (WinApi.GetKeyboardLayout() != 1049)
+                                            ChangeLayout();
+                                        break;
+                                    case "EN":
+                                        if (WinApi.GetKeyboardLayout() != 1033)
+                                            ChangeLayout();
+                                        break;
+                                }
+                                break;
+                        }
+                        break;
                     case "Mouse":
                         switch (param[2])
                         {
@@ -231,6 +252,13 @@ namespace UltimateUserInput
                 Console.WriteLine(e.Message);
             }
             return index;
+        }
+        private static void ChangeLayout()
+        {
+            UserInput.ButtonEvent(WinApi.Vk.VK_LMENU, UserInput.ButtonEvents.Down);
+            UserInput.ButtonEvent(WinApi.Vk.VK_LSHIFT, UserInput.ButtonEvents.Down);
+            UserInput.ButtonEvent(WinApi.Vk.VK_LSHIFT, UserInput.ButtonEvents.Up);
+            UserInput.ButtonEvent(WinApi.Vk.VK_LMENU, UserInput.ButtonEvents.Up);
         }
     }
 }

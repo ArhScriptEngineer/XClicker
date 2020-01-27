@@ -181,6 +181,15 @@ namespace UltimateUserInput
                                     case "<":
                                         YesOrNot = Posit.X < EqvaterX;
                                         break;
+                                    case "!=":
+                                        YesOrNot = Posit.X != EqvaterX;
+                                        break;
+                                    case ">=":
+                                        YesOrNot = Posit.X >= EqvaterX;
+                                        break;
+                                    case "<=":
+                                        YesOrNot = Posit.X <= EqvaterX;
+                                        break;
                                 }
                                 switch (param[5])
                                 {
@@ -193,12 +202,24 @@ namespace UltimateUserInput
                                     case "<":
                                         YesOrNot &= Posit.Y < EqvaterY;
                                         break;
+                                    case "!=":
+                                        YesOrNot &= Posit.Y != EqvaterY;
+                                        break;
+                                    case ">=":
+                                        YesOrNot &= Posit.Y >= EqvaterY;
+                                        break;
+                                    case "<=":
+                                        YesOrNot &= Posit.Y <= EqvaterY;
+                                        break;
                                 }
                                 break;
                             case "IntVar":
                                 if (!int.TryParse(param[5], out int Eqvater)) Eqvater = IntVars[param[5]];
                                 switch (param[4])
                                 {
+                                    case "!=":
+                                        YesOrNot = IntVars[param[3]] == Eqvater;
+                                        break;
                                     case "==":
                                         YesOrNot = IntVars[param[3]] == Eqvater;
                                         break;
@@ -242,8 +263,14 @@ namespace UltimateUserInput
                         break;
                     case "GoTo":
                         if (!int.TryParse(param[2], out int Pos)) Pos = IntVars[param[2]];
-                        if (Pos-1 < max && Pos-1 >= 0)
+                        if (Pos - 1 < max && Pos - 1 >= 0)
                             return Pos-2;
+                        break;
+                    case "AddPointer":
+                        if (!int.TryParse(param[2], out int Gos)) Gos = IntVars[param[2]];
+                        Pos = index + Gos;
+                        if (Pos < max && Pos >= 0)
+                            return Pos - 1;
                         break;
                 }
             }
